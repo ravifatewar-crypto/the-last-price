@@ -14,7 +14,8 @@ import {
   Lock, 
   LogOut, 
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Key
 } from 'lucide-react';
 import { CategoryBadge } from '@/components/ui/Badge';
 import { OpportunityItem, BuilderItem, AreaItem } from '@/types';
@@ -24,6 +25,11 @@ export default function AdminDashboardPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [passwordInput, setPasswordInput] = useState<string>('');
   const [loginError, setLoginError] = useState<string>('');
+
+  const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
+  const [newPassphrase, setNewPassphrase] = useState<string>('');
+  const [confirmPassphrase, setConfirmPassphrase] = useState<string>('');
+  const [passphraseSuccess, setPassphraseSuccess] = useState<string>('');
 
   const [activeTab, setActiveTab] = useState<'opportunities' | 'builders' | 'areas'>('opportunities');
 
@@ -93,7 +99,8 @@ export default function AdminDashboardPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === 'adminpassword123' || passwordInput.trim().length > 0) {
+    const storedPassphrase = localStorage.getItem('tlp_admin_custom_password') || 'adminpassword123';
+    if (passwordInput === storedPassphrase || passwordInput.trim() === storedPassphrase) {
       localStorage.setItem('tlp_admin_authenticated', 'true');
       setIsAuthenticated(true);
       setLoginError('');
@@ -106,6 +113,26 @@ export default function AdminDashboardPage() {
   const handleLogout = () => {
     localStorage.removeItem('tlp_admin_authenticated');
     setIsAuthenticated(false);
+  };
+
+  const handleSavePassphrase = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassphrase.length < 4) {
+      alert('Passphrase must be at least 4 characters long');
+      return;
+    }
+    if (newPassphrase !== confirmPassphrase) {
+      alert('Passphrases do not match');
+      return;
+    }
+    localStorage.setItem('tlp_admin_custom_password', newPassphrase);
+    setPassphraseSuccess('Passphrase updated successfully!');
+    setTimeout(() => {
+      setShowPasswordModal(false);
+      setPassphraseSuccess('');
+      setNewPassphrase('');
+      setConfirmPassphrase('');
+    }, 1200);
   };
 
   const fetchData = async () => {
@@ -344,13 +371,22 @@ export default function AdminDashboardPage() {
           </h1>
         </div>
 
-        <button
-          onClick={handleLogout}
-          className="inline-flex items-center text-xs font-semibold uppercase tracking-wider text-[#6B6B6B] hover:text-[#0A0A0A] border border-[#E5E5E5] px-4 py-2 bg-white"
-        >
-          <LogOut className="w-3.5 h-3.5 mr-1.5" />
-          lock session
-        </button>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => setShowPasswordModal(true)}
+            className="inline-flex items-center text-xs font-semibold uppercase tracking-wider text-[#0A0A0A] bg-[#F9F9F9] hover:bg-[#E5E5E5] border border-[#E5E5E5] px-4 py-2"
+          >
+            <Key className="w-3.5 h-3.5 mr-1.5" />
+            change passphrase
+          </button>
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center text-xs font-semibold uppercase tracking-wider text-[#6B6B6B] hover:text-[#0A0A0A] border border-[#E5E5E5] px-4 py-2 bg-white"
+          >
+            <LogOut className="w-3.5 h-3.5 mr-1.5" />
+            lock session
+          </button>
+        </div>
       </div>
 
       {/* Overview Metric Cards */}
@@ -824,6 +860,55 @@ export default function AdminDashboardPage() {
                 Save Micro-Market Profile
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Change Passphrase Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-white border border-[#0A0A0A] max-w-md w-full p-8 space-y-6">
+            <div className="flex items-center justify-between border-b border-[#E5E5E5] pb-4">
+              <h3 className="text-xl font-bold text-[#0A0A0A] lowercase">change admin passphrase</h3>
+              <button onClick={() => setShowPasswordModal(false)} className="text-xs font-mono uppercase">Close [X]</button>
+            </div>
+            {passphraseSuccess ? (
+              <div className="p-4 bg-[#F9F9F9] border border-[#1F5C3D] text-xs font-bold text-[#1F5C3D] flex items-center">
+                <CheckCircle2 className="w-4 h-4 mr-2" />
+                {passphraseSuccess}
+              </div>
+            ) : (
+              <form onSubmit={handleSavePassphrase} className="space-y-4">
+                <div>
+                  <label className="block text-[10px] uppercase font-mono text-[#6B6B6B]">New Passphrase *</label>
+                  <input
+                    type="password"
+                    required
+                    placeholder="Enter new admin passphrase"
+                    value={newPassphrase}
+                    onChange={(e) => setNewPassphrase(e.target.value)}
+                    className="w-full text-xs p-2.5 border border-[#E5E5E5] bg-[#F9F9F9]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase font-mono text-[#6B6B6B]">Confirm New Passphrase *</label>
+                  <input
+                    type="password"
+                    required
+                    placeholder="Confirm new admin passphrase"
+                    value={confirmPassphrase}
+                    onChange={(e) => setConfirmPassphrase(e.target.value)}
+                    className="w-full text-xs p-2.5 border border-[#E5E5E5] bg-[#F9F9F9]"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full text-xs font-semibold uppercase tracking-wider bg-[#0A0A0A] text-white py-3"
+                >
+                  Update Passphrase
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}

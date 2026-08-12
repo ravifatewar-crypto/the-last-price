@@ -18,7 +18,8 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === 'adminpassword123' || passwordInput.trim().length > 0) {
+    const storedPassphrase = localStorage.getItem('tlp_admin_custom_password') || 'adminpassword123';
+    if (passwordInput === storedPassphrase || passwordInput.trim() === storedPassphrase) {
       localStorage.setItem('tlp_admin_authenticated', 'true');
       setLoginError('');
       router.push('/admin');
