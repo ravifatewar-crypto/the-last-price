@@ -20,42 +20,47 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === '' ? 1.0 : 0.8,
   }));
 
-  // Fetch opportunities
-  const ops = await db.opportunity.findMany({
-    where: { status: 'PUBLISHED' },
-    select: { slug: true, updatedAt: true },
-  });
+  let opRoutes: any[] = [];
+  let builderRoutes: any[] = [];
+  let areaRoutes: any[] = [];
 
-  const opRoutes = ops.map((op) => ({
-    url: `${baseUrl}/opportunities/${op.slug}`,
-    lastModified: op.updatedAt.toISOString(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.9,
-  }));
+  try {
+    const ops = await db.opportunity.findMany({
+      where: { status: 'PUBLISHED' },
+      select: { slug: true, updatedAt: true },
+    });
 
-  // Fetch builders
-  const builders = await db.builder.findMany({
-    select: { slug: true, updatedAt: true },
-  });
+    opRoutes = ops.map((op) => ({
+      url: `${baseUrl}/opportunities/${op.slug}`,
+      lastModified: op.updatedAt ? op.updatedAt.toISOString() : new Date().toISOString(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    }));
 
-  const builderRoutes = builders.map((b) => ({
-    url: `${baseUrl}/builders/${b.slug}`,
-    lastModified: b.updatedAt.toISOString(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
-  }));
+    const builders = await db.builder.findMany({
+      select: { slug: true, updatedAt: true },
+    });
 
-  // Fetch areas
-  const areas = await db.area.findMany({
-    select: { slug: true, updatedAt: true },
-  });
+    builderRoutes = builders.map((b) => ({
+      url: `${baseUrl}/builders/${b.slug}`,
+      lastModified: b.updatedAt ? b.updatedAt.toISOString() : new Date().toISOString(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }));
 
-  const areaRoutes = areas.map((a) => ({
-    url: `${baseUrl}/areas/${a.slug}`,
-    lastModified: a.updatedAt.toISOString(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
-  }));
+    const areas = await db.area.findMany({
+      select: { slug: true, updatedAt: true },
+    });
+
+    areaRoutes = areas.map((a) => ({
+      url: `${baseUrl}/areas/${a.slug}`,
+      lastModified: a.updatedAt ? a.updatedAt.toISOString() : new Date().toISOString(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }));
+  } catch (err) {
+    console.error('Error generating sitemap dynamic routes:', err);
+  }
 
   return [...staticRoutes, ...opRoutes, ...builderRoutes, ...areaRoutes];
 }

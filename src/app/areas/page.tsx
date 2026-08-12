@@ -5,10 +5,15 @@ import { ArrowUpRight, CheckCircle2 } from 'lucide-react';
 export const revalidate = 0;
 
 export default async function AreasPage() {
-  const rawAreas = await db.area.findMany({
-    include: { opportunities: true },
-    orderBy: { name: 'asc' },
-  });
+  let rawAreas: any[] = [];
+  try {
+    rawAreas = await db.area.findMany({
+      include: { opportunities: true },
+      orderBy: { name: 'asc' },
+    });
+  } catch (err) {
+    console.error('Error fetching areas on page:', err);
+  }
 
   const areas = rawAreas.map((a) => ({
     ...a,

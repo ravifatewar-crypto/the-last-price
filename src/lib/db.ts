@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 
+// On Vercel serverless environment, filesystem is read-only except /tmp
 if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = 'file:./dev.db';
+  process.env.DATABASE_URL = process.env.VERCEL ? 'file:/tmp/dev.db' : 'file:./dev.db';
 }
 
 const globalForPrisma = globalThis as unknown as {

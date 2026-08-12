@@ -9,12 +9,28 @@ import { OpportunityItem } from '@/types';
 export const revalidate = 0;
 
 export default async function HomePage() {
-  // Fetch featured opportunities for Hero Carousel
-  const rawFeatured = await db.opportunity.findMany({
-    where: { status: 'PUBLISHED', featured: true },
-    include: { builder: true, area: true },
-    orderBy: { createdAt: 'desc' },
-  });
+  let rawFeatured: any[] = [];
+  let rawAll: any[] = [];
+  let rawAreas: any[] = [];
+
+  try {
+    rawFeatured = await db.opportunity.findMany({
+      where: { status: 'PUBLISHED', featured: true },
+      include: { builder: true, area: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    rawAll = await db.opportunity.findMany({
+      where: { status: 'PUBLISHED' },
+      include: { builder: true, area: true },
+      orderBy: { createdAt: 'desc' },
+      take: 6,
+    });
+
+    rawAreas = await db.area.findMany({ take: 4 });
+  } catch (err) {
+    console.error('Error querying DB on homepage:', err);
+  }
 
   const featuredSlides: OpportunityItem[] = rawFeatured.map((op) => ({
     ...op,
@@ -32,14 +48,6 @@ export default async function HomePage() {
     } : null,
   }));
 
-  // Fetch current opportunities for homepage grid
-  const rawAll = await db.opportunity.findMany({
-    where: { status: 'PUBLISHED' },
-    include: { builder: true, area: true },
-    orderBy: { createdAt: 'desc' },
-    take: 6,
-  });
-
   const currentOpportunities: OpportunityItem[] = rawAll.map((op) => ({
     ...op,
     category: op.category as any,
@@ -55,9 +63,6 @@ export default async function HomePage() {
       pastProjects: typeof op.builder.pastProjects === 'string' ? JSON.parse(op.builder.pastProjects || '[]') : op.builder.pastProjects,
     } : null,
   }));
-
-  // Fetch areas for micro-market section
-  const rawAreas = await db.area.findMany({ take: 4 });
   const areas = rawAreas.map((a) => ({
     ...a,
     infraHighlights: typeof a.infraHighlights === 'string' ? JSON.parse(a.infraHighlights || '[]') : [],

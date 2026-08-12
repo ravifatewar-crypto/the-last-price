@@ -6,10 +6,15 @@ import { ArrowUpRight } from 'lucide-react';
 export const revalidate = 0;
 
 export default async function BuildersPage() {
-  const rawBuilders = await db.builder.findMany({
-    include: { opportunities: true },
-    orderBy: { name: 'asc' },
-  });
+  let rawBuilders: any[] = [];
+  try {
+    rawBuilders = await db.builder.findMany({
+      include: { opportunities: true },
+      orderBy: { name: 'asc' },
+    });
+  } catch (err) {
+    console.error('Error fetching builders on page:', err);
+  }
 
   const builders = rawBuilders.map((b) => ({
     ...b,

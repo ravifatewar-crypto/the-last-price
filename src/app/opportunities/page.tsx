@@ -34,11 +34,16 @@ export default async function OpportunitiesPage({ searchParams }: OpportunitiesP
     where.propertyType = typeFilter;
   }
 
-  const rawOps = await db.opportunity.findMany({
-    where,
-    include: { builder: true, area: true },
-    orderBy: { createdAt: 'desc' },
-  });
+  let rawOps: any[] = [];
+  try {
+    rawOps = await db.opportunity.findMany({
+      where,
+      include: { builder: true, area: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (err) {
+    console.error('Error fetching opportunities on page:', err);
+  }
 
   const opportunities: OpportunityItem[] = rawOps
     .map((op) => ({
