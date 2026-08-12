@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Opportunity {
+  id           String             @id @default(uuid())
+  title        String
+  slug         String             @unique
+  category     String             // "NEW" | "RE_INVESTMENT" | "MISSED"
+  propertyType String             // "RESIDENTIAL" | "COMMERCIAL"
+  city         String
+  country      String             @default("India")
+  priceBand    String
+  thesis       String
+  summary      String
+  images       String             // Store JSON array of image URLs
+  status       String             @default("PUBLISHED") // "DRAFT" | "PUBLISHED" | "ARCHIVED"
+  featured     Boolean            @default(false)
+  
+  areaId       String?
+  area         Area?              @relation(fields: [areaId], references: [id], onDelete: SetNull)
+
+  builderId    String?
+  builder      Builder?           @relation(fields: [builderId], references: [id], onDelete: SetNull)
+
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+}
+
+model Builder {
+  id           String        @id @default(uuid())
+  name         String
+  slug         String        @unique
+  history      String
+  trackRecord  String
+  logo         String?
+  pastProjects String        // Store JSON array of past projects
+  opportunities Opportunity[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Area {
+  id              String        @id @default(uuid())
+  name            String
+  slug            String        @unique
+  overview        String
+  infraHighlights String        // Store JSON array of infra highlights
+  priceTrendNotes String
+  opportunities   Opportunity[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model AdminUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}

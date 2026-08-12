@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Default Font Switch: Inter mapped to --font-primary.
+     To switch to Helvetica Neue if/when licensed via Adobe Fonts,
+     simply change the variable below or update font-sans in tailwind.config.ts */
+  --font-primary: var(--font-inter, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+}
+
+body {
+  color: #0A0A0A;
+  background-color: #FFFFFF;
+  font-family: var(--font-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Selection & Focus Styles */
+::selection {
+  background-color: #0A0A0A;
+  color: #FFFFFF;
+}
+
+*:focus-visible {
+  outline: 2px solid #0A0A0A;
+  outline-offset: 2px;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Monospaced / Data styles */
+.font-data {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Wordmark layout styling */
+.brand-wordmark {
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  text-transform: lowercase;
+}
