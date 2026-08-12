@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 export const Header = () => {
   const pathname = usePathname();
@@ -47,17 +47,6 @@ export const Header = () => {
           ))}
         </nav>
 
-        {/* Admin Portal & Actions */}
-        <div className="hidden lg:flex items-center space-x-4">
-          <Link
-            href="/admin"
-            className="inline-flex items-center text-xs font-semibold uppercase tracking-wider text-[#0A0A0A] bg-white border border-[#0A0A0A] px-4 py-2 hover:bg-[#0A0A0A] hover:text-white transition-colors"
-          >
-            admin portal
-            <ArrowUpRight className="ml-1 w-3.5 h-3.5" />
-          </Link>
-        </div>
-
         {/* Mobile Menu Button */}
         <div className="lg:hidden flex items-center">
           <button
@@ -85,16 +74,6 @@ export const Header = () => {
               {link.name}
             </Link>
           ))}
-          <div className="pt-2 border-t border-[#E5E5E5]">
-            <Link
-              href="/admin"
-              onClick={() => setMobileMenuOpen(false)}
-              className="inline-flex items-center text-xs font-semibold uppercase tracking-wider text-[#0A0A0A] bg-white border border-[#0A0A0A] px-4 py-2 hover:bg-[#0A0A0A] hover:text-white transition-colors w-full justify-center"
-            >
-              admin portal
-              <ArrowUpRight className="ml-1 w-3.5 h-3.5" />
-            </Link>
-          </div>
         </div>
       )}
     </header>

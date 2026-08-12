@@ -55,7 +55,7 @@ export const Footer = () => {
           </div>
 
           {/* Navigation Column 2: Markets & Tools */}
-          <div className="md:col-span-2 space-y-4">
+          <div className="md:col-span-4 space-y-4">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-[#A3A3A3]">
               markets & tools
             </h4>
@@ -78,20 +78,6 @@ export const Footer = () => {
               <li>
                 <Link href="/blog" className="hover:text-[#E5E5E5] text-[#D4D4D4] transition-colors">
                   Editorial Articles
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Navigation Column 3: Platform */}
-          <div className="md:col-span-2 space-y-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#A3A3A3]">
-              internal
-            </h4>
-            <ul className="space-y-2.5 text-sm">
-              <li>
-                <Link href="/admin" className="hover:text-[#E5E5E5] text-[#D4D4D4] transition-colors">
-                  Admin Dashboard
                 </Link>
               </li>
             </ul>
